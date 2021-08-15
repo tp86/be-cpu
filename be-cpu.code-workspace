@@ -11,6 +11,10 @@
 		},
 		"files.exclude": {
 			"**/.venv": true
-		}
+		},
+		"python.formatting.autopep8Args": [
+			"--aggresive",
+			"--aggresive"
+		]
 	}
 }

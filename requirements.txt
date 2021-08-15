@@ -1,2 +1,2 @@
-rxpy
+rx
 pyqt5
