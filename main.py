@@ -4,15 +4,16 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget
 import rx
 import rx.operators as rxop
+from rx.subject import Subject
 
 
 class CPUBoardWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, clock_control):
         super().__init__()
 
         self.setWindowTitle("CPU")
 
-        self.button = QPushButton("Press Me!")
+        self.button = QPushButton("Stop the clock!")
         self.button.clicked.connect(self.button_clicked)
 
         self.label = QLabel()
@@ -28,8 +29,11 @@ class CPUBoardWindow(QMainWindow):
 
         self.setCentralWidget(container)
 
+        self.clock_control = clock_control
+
     def button_clicked(self):
-        self.label.setText("The button was clicked")
+        self.clock_control.on_completed()
+        self.label.setText("Clock stopped")
 
     def count(self, item):
         self.label.setText(str(item))
@@ -37,10 +41,15 @@ class CPUBoardWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    window = CPUBoardWindow()
+
+    clock_source = rx.interval(1)
+    clock_control = Subject()
+
+    window = CPUBoardWindow(clock_control)
     window.show()
 
-    rx.interval(2).subscribe(window.count)
+    clock_source.subscribe(clock_control)
+    clock_control.subscribe(window.count)
 
     app.exec()
 
