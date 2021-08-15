@@ -5,6 +5,12 @@
 		}
 	],
 	"settings": {
-		"python.pythonPath": ".venv/bin/python3.9"
+		"python.pythonPath": ".venv/bin/python3.9",
+		"files.watcherExclude": {
+			"**/.venv/**": true
+		},
+		"files.exclude": {
+			"**/.venv": true
+		}
 	}
 }
