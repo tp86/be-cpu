@@ -1,0 +1,2 @@
+rxpy
+pyqt5
