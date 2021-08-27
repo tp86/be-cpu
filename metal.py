@@ -1,14 +1,22 @@
 """Basic physical components of CPU."""
 
+import rx.operators as op
 from rx.subject import Subject
 
 
 class Pin(Subject):
-    """Pin is element that has one incoming connection at a time."""
+    """Pin is element that has one incoming connection at a time.
+
+    Emits element only on change.
+    """
 
     def __init__(self):
         super().__init__()
+        self._output = Subject()
+        super().pipe(op.distinct_until_changed()).subscribe(self._output)
         self._connection = None
+        self.subscribe = self._output.subscribe
+        self.pipe = self._output.pipe
 
     @property
     def is_connected(self):
