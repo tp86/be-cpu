@@ -17,8 +17,14 @@ class AdjustableInterval:
 
     @property
     def _new_interval(self):
+        # concatenate with single element at the beginning to avoid
+        # waiting for first element at interval end
         return rx.concat(rx.of(-1), rx.interval(self.interval)).pipe(
-            op.do_action(self._set_last_timestamp)
+            op.do_action(self._set_last_timestamp),
+            # ensure value is unique in order to always pass through Pin
+            # even for quick changes of interval, when -1 is emitted
+            # at the start
+            op.map(lambda _: time()),
         )
 
     @property
