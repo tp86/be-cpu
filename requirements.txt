@@ -1,2 +1,2 @@
-rxpy
-pyqt5
+rx
+PySide6
