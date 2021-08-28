@@ -68,7 +68,7 @@ class Clock:
 
 
 class Pulse:
-    def __init__(self, edge: Union[H, L]) -> None:
+    def __init__(self, edge: Union[H, L] = H) -> None:
         self.CLOCK = Pin()
         self.PULSE = Pin()
 
