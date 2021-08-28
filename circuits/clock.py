@@ -2,7 +2,7 @@ from time import time
 
 import rx
 import rx.operators as op
-from metal import Pin
+from metal import H, Pin
 
 
 class AdjustableInterval:
@@ -41,3 +41,26 @@ class AdjustableInterval:
             self.output.connect(self._new_interval.pipe(
                 op.delay(interval - passed)
             ))
+
+
+class Clock:
+    def __init__(self) -> None:
+        self.output = Pin()
+
+        self._interval = AdjustableInterval()
+        previous_signal_flipped = self.output.pipe(op.map(lambda s: s.flip))
+        previous_signal_with_starter = rx.concat(
+            rx.of(H), previous_signal_flipped)
+        self.output.connect(
+            rx.zip(self._interval.output, previous_signal_with_starter).pipe(
+                op.map(lambda t: t[1])
+            )
+        )
+
+    @property
+    def frequency(self):
+        return 1 / (2 * self._interval.interval)
+
+    @frequency.setter
+    def frequency(self, frequency):
+        self._interval.interval = 1 / (2 * frequency)
