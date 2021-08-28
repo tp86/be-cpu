@@ -37,7 +37,7 @@ class Not(_Gate):
         self.B = Pin()
 
         self.B.connect(
-            self.A.pipe(op.map(lambda x: not x))
+            self.A.pipe(op.map(lambda s: s.flip))
         )
 
 
