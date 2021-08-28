@@ -1,4 +1,5 @@
-from gates import Nor
+from metal import Pin
+from gates import And, Nor, Not
 
 
 class SR:
@@ -17,3 +18,38 @@ class SR:
         # initialize in reset state
         self.Q.on_next(False)
         self.Q_.on_next(True)
+
+
+class SREnable:
+    def __init__(self):
+        sr = SR()
+        s_and = And()
+        r_and = And()
+
+        self.R = Pin()
+        self.EN = Pin()
+        self.S = Pin()
+
+        self.Q = sr.Q
+        self.Q_ = sr.Q_
+
+        sr.R.connect(r_and.C)
+        sr.S.connect(s_and.C)
+        r_and.A.connect(self.R)
+        s_and.A.connect(self.S)
+        r_and.B.connect(self.EN)
+        s_and.B.connect(self.EN)
+
+
+class D:
+    def __init__(self) -> None:
+        sre = SREnable()
+        notGate = Not()
+
+        self.D = sre.S
+        self.EN = sre.EN
+        self.Q = sre.Q
+        self.Q_ = sre.Q_
+
+        sre.R.connect(notGate.B)
+        notGate.A.connect(sre.S)
