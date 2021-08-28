@@ -1,15 +1,16 @@
 from time import time
+from typing import Union
 
 import rx
 import rx.operators as op
-from metal import H, Pin
+from metal import H, L, Pin
 
 
 class AdjustableInterval:
     def __init__(self, interval=1.0) -> None:
         self._interval = interval
-        self.output = Pin()
-        self.output.connect(self._new_interval)
+        self.OUTPUT = Pin()
+        self.OUTPUT.connect(self._new_interval)
         self._last_timestamp = None
 
     def _set_last_timestamp(self, _):
@@ -36,23 +37,23 @@ class AdjustableInterval:
         self._interval = interval
         passed = time() - self._last_timestamp
         if passed > interval:
-            self.output.connect(self._new_interval)
+            self.OUTPUT.connect(self._new_interval)
         else:
-            self.output.connect(self._new_interval.pipe(
+            self.OUTPUT.connect(self._new_interval.pipe(
                 op.delay(interval - passed)
             ))
 
 
 class Clock:
     def __init__(self) -> None:
-        self.output = Pin()
+        self.CLOCK = Pin()
 
         self._interval = AdjustableInterval()
-        previous_signal_flipped = self.output.pipe(op.map(lambda s: s.flip))
+        previous_signal_flipped = self.CLOCK.pipe(op.map(lambda s: s.flip))
         previous_signal_with_starter = rx.concat(
             rx.of(H), previous_signal_flipped)
-        self.output.connect(
-            rx.zip(self._interval.output, previous_signal_with_starter).pipe(
+        self.CLOCK.connect(
+            rx.zip(self._interval.OUTPUT, previous_signal_with_starter).pipe(
                 op.map(lambda t: t[1])
             )
         )
@@ -64,3 +65,16 @@ class Clock:
     @frequency.setter
     def frequency(self, frequency):
         self._interval.interval = 1 / (2 * frequency)
+
+
+class Pulse:
+    def __init__(self, edge: Union[H, L]) -> None:
+        self.CLOCK = Pin()
+        self.PULSE = Pin()
+
+        self.PULSE.connect(
+            self.CLOCK.pipe(
+                op.filter(lambda s: s == edge),
+                op.flat_map(lambda _: rx.of(edge, edge.flip))
+            )
+        )
