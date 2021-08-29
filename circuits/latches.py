@@ -54,3 +54,15 @@ class D:
 
         sre.R.connect(notGate.B)
         notGate.A.connect(sre.S)
+
+
+class DFlipFlop:
+    def __init__(self):
+        d = D()
+        pulse = Pulse()
+
+        self.D = d.D
+        self.Q = d.Q
+        self.Q_ = d.Q_
+        self.CLK = pulse.CLOCK
+        d.EN.connect(pulse.PULSE)
