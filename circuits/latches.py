@@ -1,4 +1,5 @@
-from metal import Pin
+from circuits.clock import Pulse
+from metal import H, L, Pin
 from gates import And, Nor, Not
 
 
@@ -16,8 +17,8 @@ class SR:
         r_nor.B.connect(s_nor.C)
 
         # initialize in reset state
-        self.Q.on_next(False)
-        self.Q_.on_next(True)
+        self.Q.on_next(L)
+        self.Q_.on_next(H)
 
 
 class SREnable:
