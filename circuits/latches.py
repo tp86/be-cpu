@@ -1,6 +1,6 @@
 from circuits.clock import Pulse
 from metal import H, L, Pin
-from gates import And, Nor, Not
+from gates import And, Nor, Not, Or
 
 
 class SR:
@@ -66,3 +66,27 @@ class DFlipFlop:
         self.Q_ = d.Q_
         self.CLK = pulse.CLOCK
         d.EN.connect(pulse.PULSE)
+
+
+class DWithClear:
+    def __init__(self):
+        d = D()
+        clr_not = Not()
+        clk_or = Or()
+        d_and = And()
+
+        self.D = d_and.A
+        self.CLR = Pin()
+        self.EN = clk_or.A
+        self.Q = d.Q
+        self.Q_ = d.Q_
+
+        d_and.B.connect(clr_not.B)
+        clr_not.A.connect(self.CLR)
+        clk_or.B.connect(self.CLR)
+        d.D.connect(d_and.C)
+        d.EN.connect(clk_or.C)
+
+        # initialize in cleared state
+        self.CLR.on_next(H)
+        self.CLR.on_next(L)
