@@ -90,3 +90,16 @@ class DWithClear:
         # initialize in cleared state
         self.CLR.on_next(H)
         self.CLR.on_next(L)
+
+
+class DFlipFlopWithClear:
+    def __init__(self):
+        d = DWithClear()
+        pulse = Pulse()
+
+        self.D = d.D
+        self.Q = d.Q
+        self.Q_ = d.Q_
+        self.CLK = pulse.CLOCK
+        self.CLR = d.CLR
+        d.EN.connect(pulse.PULSE)
