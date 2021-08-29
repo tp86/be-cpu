@@ -28,3 +28,20 @@ class Switch:
 
     def off(self):
         self._sw.on_next(L)
+
+
+class Buffer:
+    def __init__(self):
+        self.ENABLE = Pin()
+        self.IN = Pin()
+        self.OUT = Pin()
+
+        self.OUT.connect(
+            rx.combine_latest(self.ENABLE, self.IN).pipe(
+                op.filter(lambda t: t[0]),
+                op.starmap(lambda _, s: s)
+            )
+        )
+
+        # initialize in disabled state
+        self.ENABLE.on_next(L)
