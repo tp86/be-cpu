@@ -94,6 +94,12 @@ class PinTest(TestCase):
         Pin.combine_latest(pin1, pin2).subscribe(self.probe)
         self.assertEqual([(L, H)], self.probe.results)
 
+        pin1.on_next(H)
+        self.assertEqual([(L, H), (H, H)], self.probe.results)
+
+        probe = Probe()
+        Pin.combine_latest(pin1, pin2).subscribe(probe)
+        self.assertEqual([(H, H)], probe.results)
 
 class SwitchTest(TestCase):
 
