@@ -1,22 +1,24 @@
-"""Basic physical components of CPU."""
-
 import rx.operators as op
-from rx.subject import Subject
+from rx.subject import Subject, ReplaySubject
+
+from physical.signals import L
 
 
 class Pin(Subject):
     """Pin is element that has one incoming connection at a time.
 
-    Emits element only on change.
+    Emits element only on change of incoming value
+    or on new connection to pin (replay).
     """
 
-    def __init__(self):
+    def __init__(self, init=L):
         super().__init__()
-        self._output = Subject()
+        self._output = ReplaySubject(1)
         super().pipe(op.distinct_until_changed()).subscribe(self._output)
         self._connection = None
         self.subscribe = self._output.subscribe
         self.pipe = self._output.pipe
+        self.on_next(init)
 
     @property
     def is_connected(self):
@@ -29,30 +31,3 @@ class Pin(Subject):
     def connect(self, source):
         self.disconnect()
         self._connection = source.subscribe(self)
-
-
-class _SignalMeta(type):
-    def __repr__(cls):
-        return cls.repr
-    __str__ = __repr__
-
-    def __bool__(cls):
-        return cls.value
-
-
-class _Signal(metaclass=_SignalMeta):
-    pass
-
-
-class H(_Signal):
-    repr = '\u0393'
-    value = True
-
-
-class L(_Signal):
-    repr = 'L'
-    value = False
-    flip = H
-
-
-H.flip = L
