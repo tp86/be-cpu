@@ -1,7 +1,8 @@
+import rx
 import rx.operators as op
-from rx.subject import Subject, ReplaySubject
+from rx.subject import ReplaySubject, Subject
 
-from physical.signals import L
+from physical.signals import H, L
 
 
 class Pin(Subject):
@@ -31,3 +32,35 @@ class Pin(Subject):
     def connect(self, source):
         self.disconnect()
         self._connection = source.subscribe(self)
+
+    @staticmethod
+    def combine_latest(*pins):
+        subjects = [ReplaySubject() for _ in pins]
+        for index, pin in enumerate(pins):
+            pin.subscribe(subjects[index])
+        return rx.combine_latest(*subjects)
+
+
+class Switch:
+    def __init__(self):
+
+        self.IN1 = Pin()
+        self.IN2 = Pin()
+        self.OUT = Pin()
+
+        self._sw = Subject()
+
+        self.OUT.connect(
+            Pin.combine_latest(self._sw, self.IN1, self.IN2).pipe(
+                op.starmap(lambda sw, in1, in2: in2 if sw else in1)
+            )
+        )
+
+        # initialize in turned off state
+        self.off()
+
+    def on(self):
+        self._sw.on_next(H)
+
+    def off(self):
+        self._sw.on_next(L)

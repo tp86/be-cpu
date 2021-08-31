@@ -4,7 +4,7 @@ import rx
 import rx.operators as op
 from rx.subject import Subject
 
-from physical.elements import Pin
+from physical.elements import Pin, Switch
 from physical.signals import H, L
 
 
@@ -77,3 +77,53 @@ class PinTest(TestCase):
         src1.on_next(H)
 
         self.assertEqual([L, H, L], self.probe.results)
+
+    def test_downstream_pins_get_values_from_upstream_pins_on_connection(self):
+        upstream_pin = Pin(H)
+        downstream_pin = Pin(L)
+
+        downstream_pin.connect(upstream_pin)
+        downstream_pin.subscribe(self.probe)
+
+        self.assertEqual([H], self.probe.results)
+
+    def test_pin_states_propagate_through_combine_latest(self):
+        pin1 = Pin()
+        pin2 = Pin(H)
+
+        Pin.combine_latest(pin1, pin2).subscribe(self.probe)
+        self.assertEqual([(L, H)], self.probe.results)
+
+
+class SwitchTest(TestCase):
+
+    def setUp(self):
+        self.probe = Probe()
+        self.switch = Switch()
+
+    def test_switch_is_initialized_in_turned_off_state(self):
+        self.switch.OUT.subscribe(self.probe)
+
+        self.assertEqual([L], self.probe.results)
+
+        self.switch.IN1.on_next(H)
+
+        self.assertEqual([L, H], self.probe.results)
+
+        self.switch.IN1.on_next(L)
+        self.switch.IN2.on_next(H)
+
+        self.assertEqual([L, H, L], self.probe.results)
+
+    def test_switching_between_pins(self):
+        self.switch.IN2.on_next(H)
+        self.switch.on()
+
+        self.switch.OUT.subscribe(self.probe)
+
+        self.assertEqual([H], self.probe.results)
+
+        self.switch.IN1.on_next(H)
+        self.switch.off()
+
+        self.assertEqual([H], self.probe.results)
