@@ -1,7 +1,6 @@
-import rx
 import rx.operators as op
 
-from metal import H, L, Pin
+from physical.elements import Pin
 
 
 class Buffer:
@@ -11,11 +10,8 @@ class Buffer:
         self.OUT = Pin()
 
         self.OUT.connect(
-            rx.combine_latest(self.ENABLE, self.IN).pipe(
+            Pin.combine_latest(self.ENABLE, self.IN).pipe(
                 op.filter(lambda t: t[0]),
                 op.starmap(lambda _, s: s)
             )
         )
-
-        # initialize in disabled state
-        self.ENABLE.on_next(L)
