@@ -1,4 +1,3 @@
-import rx
 import rx.operators as op
 
 from physical.elements import Pin
@@ -6,7 +5,7 @@ from physical.elements import Pin
 
 class _Gate:
     def combine(self, combiner, *sources):
-        return rx.combine_latest(*sources).pipe(combiner)
+        return Pin.combine_latest(*sources).pipe(combiner)
 
 
 class And(_Gate):
