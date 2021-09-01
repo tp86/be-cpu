@@ -3,24 +3,10 @@ from unittest import TestCase
 import rx
 import rx.operators as op
 from rx.subject import Subject
+from test_utils import Probe
 
 from physical.elements import Pin, Switch
 from physical.signals import H, L
-
-
-class Probe:
-    def __init__(self):
-        self.results = []
-        self.error = None
-
-    def on_next(self, elem):
-        self.results.append(elem)
-
-    def on_error(self, error):
-        self.error = error
-
-    def on_completed(self):
-        pass
 
 
 class PinTest(TestCase):
@@ -100,6 +86,7 @@ class PinTest(TestCase):
         probe = Probe()
         Pin.combine_latest(pin1, pin2).subscribe(probe)
         self.assertEqual([(H, H)], probe.results)
+
 
 class SwitchTest(TestCase):
 

@@ -1,7 +1,7 @@
 import rx
 import rx.operators as op
 
-from metal import Pin
+from physical.elements import Pin
 
 
 class _Gate:
