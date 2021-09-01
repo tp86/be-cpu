@@ -1,11 +1,13 @@
-from gates import And, Not
-from switches import Switch
 from time import time
 from typing import Union
+from math import inf
 
 import rx
 import rx.operators as op
-from metal import H, L, Pin
+from physical.elements import Pin, Switch
+from physical.signals import H, L
+
+from logical.gates import And, Not
 
 
 class AdjustableInterval:
@@ -37,7 +39,7 @@ class AdjustableInterval:
     @interval.setter
     def interval(self, interval):
         self._interval = interval
-        passed = time() - self._last_timestamp
+        passed = time() - self._last_timestamp if self._last_timestamp else inf
         if passed > interval:
             self.OUTPUT.connect(self._new_interval)
         else:
@@ -47,26 +49,27 @@ class AdjustableInterval:
 
 
 class Clock:
-    def __init__(self) -> None:
+    def __init__(self, frequency=1) -> None:
         self.CLOCK = Pin()
 
-        self._interval = AdjustableInterval()
+        self._interval = AdjustableInterval(self._freq2period(frequency))
         previous_signal_flipped = self.CLOCK.pipe(op.map(lambda s: s.flip))
-        previous_signal_with_starter = rx.concat(
-            rx.of(H), previous_signal_flipped)
         self.CLOCK.connect(
-            rx.zip(self._interval.OUTPUT, previous_signal_with_starter).pipe(
+            rx.zip(self._interval.OUTPUT, previous_signal_flipped).pipe(
                 op.map(lambda t: t[1])
             )
         )
 
+    def _freq2period(self, frequency):
+        return 1 / (2 * frequency)
+
     @property
     def frequency(self):
-        return 1 / (2 * self._interval.interval)
+        return self._freq2period(self._interval.interval)
 
     @frequency.setter
     def frequency(self, frequency):
-        self._interval.interval = 1 / (2 * frequency)
+        self._interval.interval = self._freq2period(frequency)
 
 
 class Pulse:
