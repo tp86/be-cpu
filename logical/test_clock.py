@@ -72,10 +72,26 @@ class ClockTest(TestCase):
 
         self.assertEqual([L, H, L], self.probe.results)
 
-    @pytest.mark.skip('not implemented yet')
+    @pytest.mark.slow
     def test_clock_frequency_can_be_set_on_creation(self):
-        pass
+        clock = Clock(2.5)
+        clock.CLOCK.subscribe(self.probe)
 
-    @pytest.mark.skip('not implemented yet')
+        sleep(0.5)
+
+        self.assertEqual([L, H, L], self.probe.results)
+
+    @pytest.mark.slow
     def test_clock_frequency_can_be_changed(self):
-        pass
+        self.assertEqual(1, self.clock.frequency)
+        self.clock.CLOCK.subscribe(self.probe)
+
+        sleep(0.6)
+
+        self.assertEqual([L, H], self.probe.results)
+
+        self.clock.frequency = 2.5
+
+        sleep(0.4)
+
+        self.assertEqual([L, H, L, H], self.probe.results)
