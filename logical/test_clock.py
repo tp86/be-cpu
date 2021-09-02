@@ -71,3 +71,11 @@ class ClockTest(TestCase):
         sleep(0.5)
 
         self.assertEqual([L, H, L], self.probe.results)
+
+    @pytest.mark.skip('not implemented yet')
+    def test_clock_frequency_can_be_set_on_creation(self):
+        pass
+
+    @pytest.mark.skip('not implemented yet')
+    def test_clock_frequency_can_be_changed(self):
+        pass
