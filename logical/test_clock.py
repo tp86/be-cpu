@@ -5,7 +5,7 @@ from unittest import TestCase
 import pytest
 from test_utils import Probe
 
-from logical.clock import AdjustableInterval, Clock
+from logical.clock import AdjustableInterval, Clock, Pulse
 
 
 class AdjustableIntervalTest(TestCase):
@@ -95,3 +95,40 @@ class ClockTest(TestCase):
         sleep(0.4)
 
         self.assertEqual([L, H, L, H], self.probe.results)
+
+
+class PulseTest(TestCase):
+
+    def setUp(self):
+        self.probe = Probe()
+        self.pulse = Pulse()
+
+    def test_pulse_initializes_with_low_state(self):
+        self.pulse.PULSE.subscribe(self.probe)
+
+        self.assertEqual([L], self.probe.results)
+
+    def test_pulse_emits_two_changes_on_high_input_only(self):
+        self.pulse.PULSE.subscribe(self.probe)
+
+        self.pulse.CLOCK.on_next(H)
+
+        self.assertEqual([L, H, L], self.probe.results)
+
+        self.pulse.CLOCK.on_next(L)
+
+        self.assertEqual([L, H, L], self.probe.results)
+
+    def test_pulse_detected_edge_may_be_changed_on_creation(self):
+        pulse = Pulse(L)
+        pulse.PULSE.subscribe(self.probe)
+
+        self.assertEqual([H], self.probe.results)
+
+        pulse.CLOCK.on_next(H)
+
+        self.assertEqual([H], self.probe.results)
+
+        pulse.CLOCK.on_next(L)
+
+        self.assertEqual([H, L, H], self.probe.results)
