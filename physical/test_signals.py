@@ -1,4 +1,4 @@
-from physical.signals import H, L
+from .signals import H, L
 from unittest import TestCase
 
 

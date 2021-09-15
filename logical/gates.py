@@ -1,46 +1,7 @@
-import rx.operators as op
-
-from physical.elements import Pin
+from physical.gates import And, Not, Or
 
 
-class _Gate:
-    def combine(self, combiner, *sources):
-        return Pin.combine_latest(*sources).pipe(combiner)
-
-
-class And(_Gate):
-    def __init__(self):
-        self.A = Pin()
-        self.B = Pin()
-        self.C = Pin()
-
-        self.C.connect(
-            self.combine(op.map(lambda t: t[0] and t[1]), self.A, self.B)
-        )
-
-
-class Or(_Gate):
-    def __init__(self):
-        self.A = Pin()
-        self.B = Pin()
-        self.C = Pin()
-
-        self.C.connect(
-            self.combine(op.map(lambda t: t[0] or t[1]), self.A, self.B)
-        )
-
-
-class Not(_Gate):
-    def __init__(self):
-        self.A = Pin()
-        self.B = Pin()
-
-        self.B.connect(
-            self.A.pipe(op.map(lambda s: s.flip))
-        )
-
-
-class Nand(_Gate):
+class Nand:
     def __init__(self):
         andGate = And()
         notGate = Not()
@@ -52,7 +13,7 @@ class Nand(_Gate):
         notGate.A.connect(andGate.C)
 
 
-class Nor(_Gate):
+class Nor:
     def __init__(self):
         orGate = Or()
         notGate = Not()

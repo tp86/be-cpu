@@ -7,8 +7,10 @@ pytest_args = [
     "--cov-branch",
     "--cov-report",
     "term",
-    "-m",
-    "not slow"
+    "--cov-report",
+    "xml",
+    # "-m",
+    # "not slow"
 ]
 
 exit(pytest.main(pytest_args))

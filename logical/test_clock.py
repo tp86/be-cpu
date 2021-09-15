@@ -1,11 +1,11 @@
-from physical.signals import H, L
 from time import sleep
 from unittest import TestCase
 
 import pytest
+from physical.signals import H, L
 from test_utils import Probe
 
-from logical.clock import AdjustableInterval, Clock, Pulse
+from .clock import AdjustableInterval, Clock, Pulse
 
 
 class AdjustableIntervalTest(TestCase):

@@ -1,8 +1,8 @@
 from physical.signals import H, L
 from physical.elements import Pin
 
-from logical.clock import Pulse
-from logical.gates import And, Nor, Not, Or
+from .clock import Pulse
+from .gates import And, Nor, Not, Or
 
 
 class SR:

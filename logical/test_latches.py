@@ -1,8 +1,9 @@
 from unittest import TestCase
+
+from physical.signals import H, L
 from test_utils import Probe
 
-from logical.latches import D, SR, SREnable
-from physical.signals import H, L
+from .latches import SR, D, SREnable
 
 
 class SRTest(TestCase):

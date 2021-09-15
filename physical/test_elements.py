@@ -1,12 +1,12 @@
 from unittest import TestCase
 
-import rx
-import rx.operators as op
+from rx import of as source
+from rx.operators import map as rxmap
 from rx.subject import Subject
 from test_utils import Probe
 
-from physical.elements import Pin, Switch
-from physical.signals import H, L
+from .elements import Pin, Switch
+from .signals import H, L
 
 
 class PinTest(TestCase):
@@ -28,7 +28,7 @@ class PinTest(TestCase):
 
     def test_pin_propagates_only_changes(self):
         self.pin.subscribe(self.probe)
-        rx.of(H, L, H, H, H, L).subscribe(self.pin)
+        source(H, L, H, H, H, L).subscribe(self.pin)
 
         self.assertEqual([L, H, L, H, L], self.probe.results)
 
@@ -38,7 +38,7 @@ class PinTest(TestCase):
 
         probe2 = Probe()
         self.pin.pipe(
-            op.map(lambda x: x)
+            rxmap(lambda x: x)
         ).subscribe(probe2)
 
         self.assertEqual([L, H], self.probe.results)

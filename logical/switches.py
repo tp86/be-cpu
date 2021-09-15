@@ -1,4 +1,4 @@
-import rx.operators as op
+from rx.operators import filter as rxfilter, starmap
 
 from physical.elements import Pin
 
@@ -11,7 +11,7 @@ class Buffer:
 
         self.OUT.connect(
             Pin.combine_latest(self.ENABLE, self.IN).pipe(
-                op.filter(lambda t: t[0]),
-                op.starmap(lambda _, s: s)
+                rxfilter(lambda t: t[0]),
+                starmap(lambda _, s: s)
             )
         )

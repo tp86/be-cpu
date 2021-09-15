@@ -1,9 +1,9 @@
 from unittest import TestCase
 
+from physical.signals import H, L
 from test_utils import Probe
 
-from logical.switches import Buffer
-from physical.signals import H, L
+from .switches import Buffer
 
 
 class BufferTest(TestCase):
