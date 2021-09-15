@@ -1,8 +1,6 @@
-from gates import And, Not, Or
-from metal import H, L
-from switches import Buffer
-
-from circuits.latches import DFlipFlopWithClear as D
+from .gates import And, Not, Or
+from .latches import DFlipFlopWithClear as D
+from .switches import Buffer
 
 
 class _D_1bit:
@@ -25,11 +23,6 @@ class _D_1bit:
         data_or.A.connect(loop_and.C)
         data_or.B.connect(input_and.C)
         d.D.connect(data_or.C)
-
-        # initialize with low state
-        # need to trigger CHANGES to be propagated through pins
-        self.Q.on_next(H)
-        self.Q.on_next(L)
 
 
 class DType_4bit:
