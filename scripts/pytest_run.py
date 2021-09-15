@@ -9,8 +9,8 @@ pytest_args = [
     "term",
     "--cov-report",
     "xml",
-    # "-m",
-    # "not slow"
+    "-m",
+    "not slow"
 ]
 
 exit(pytest.main(pytest_args))

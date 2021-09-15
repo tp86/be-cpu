@@ -1,5 +1,5 @@
-from physical.signals import H, L
 from physical.elements import Pin
+from physical.signals import H, L
 
 from .clock import Pulse
 from .gates import And, Nor, Not, Or
