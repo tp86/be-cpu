@@ -15,8 +15,8 @@ class AdjustableInterval:
     def __init__(self, interval=1.0) -> None:
         self._interval = interval
         self.OUTPUT = Pin()
-        self.OUTPUT.connect(self._new_interval)
         self._last_timestamp = None
+        self.OUTPUT.connect(self._new_interval)
 
     def _set_last_timestamp(self, _):
         self._last_timestamp = time()
@@ -30,7 +30,7 @@ class AdjustableInterval:
             # ensure value is unique in order to always pass through Pin
             # even for quick changes of interval, when -1 is emitted
             # at the start
-            rxmap(self._set_last_timestamp),
+            rxmap(self._set_last_timestamp)
         )
 
     @property

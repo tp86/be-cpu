@@ -20,18 +20,15 @@ class ClockModule:
         self.CLK_ = Pin()
         self.HLT = Pin()
 
-        self._clock_selector.IN1.connect(self._manual_clk.OUT)
-        self._clock_selector.IN2.connect(self._clock.CLOCK)
-        self._manual_clk.IN1.connect(h_src)
-        self._manual_clk.IN2.connect(l_src)
+        self._clock_selector.IN1.connect(self._clock.CLOCK)
+        self._clock_selector.IN2.connect(self._manual_clk.OUT)
+        self._manual_clk.IN1.connect(l_src)
+        self._manual_clk.IN2.connect(h_src)
         and_halt.A.connect(self._clock_selector.OUT)
         and_halt.B.connect(not_halt.B)
         not_halt.A.connect(self.HLT)
         self.CLK_.connect(not_clock.B)
         not_clock.A.connect(self.CLK)
-
-        # initialize with HTL low
-        self.HLT.on_next(L)
 
     @property
     def frequency(self):

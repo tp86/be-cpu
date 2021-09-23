@@ -1,5 +1,7 @@
+from multiprocessing import cpu_count
 from rx import combine_latest
 from rx.operators import distinct_until_changed, starmap
+from rx.scheduler import ThreadPoolScheduler
 from rx.subject import ReplaySubject, Subject
 
 from .signals import H, L
@@ -12,8 +14,12 @@ class Pin(Subject):
     or on new connection to pin (replay).
     """
 
+    _scheduler = ThreadPoolScheduler(cpu_count())
+    _pins = set()
+
     def __init__(self, init=L):
         super().__init__()
+        self._pins.add(self)
         self._output = ReplaySubject(1)
         super().pipe(distinct_until_changed()).subscribe(self._output)
         self._connection = None
@@ -31,7 +37,7 @@ class Pin(Subject):
 
     def connect(self, source):
         self.disconnect()
-        self._connection = source.subscribe(self)
+        self._connection = source.subscribe(self, scheduler=self._scheduler)
 
     @staticmethod
     def combine_latest(*pins):
@@ -39,6 +45,11 @@ class Pin(Subject):
         for index, pin in enumerate(pins):
             pin.subscribe(subjects[index])
         return combine_latest(*subjects)
+
+    @classmethod
+    def disconnect_all(cls):
+        for pin in cls._pins:
+            pin.disconnect()
 
 
 class Switch:
