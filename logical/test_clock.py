@@ -1,14 +1,13 @@
 from time import sleep
-from unittest import TestCase
 
 import pytest
 from physical.signals import H, L
-from test_utils import Probe
+from test_utils import CPUTestCase, Probe
 
 from .clock import AdjustableInterval, Clock, Pulse
 
 
-class AdjustableIntervalTest(TestCase):
+class AdjustableIntervalTest(CPUTestCase):
 
     def setUp(self):
         self.probe = Probe()
@@ -24,7 +23,7 @@ class AdjustableIntervalTest(TestCase):
 
         sleep(2.5)
 
-        self.assertEqual(3, len(self.probe.results))
+        self.assertEqual(4, len(self.probe.results))
 
     @pytest.mark.slow
     def test_adjustable_interval_can_be_changed(self):
@@ -33,11 +32,11 @@ class AdjustableIntervalTest(TestCase):
 
         sleep(0.9)
 
-        self.assertEqual(5, len(self.probe.results))
+        self.assertEqual(6, len(self.probe.results))
 
         self.ai.interval = 0.5
         sleep(1.0)
-        self.assertEqual(7, len(self.probe.results))
+        self.assertEqual(8, len(self.probe.results))
 
     @pytest.mark.slow
     def test_adjustable_interval_can_be_set_on_creation(self):
@@ -46,10 +45,10 @@ class AdjustableIntervalTest(TestCase):
 
         sleep(0.7)
 
-        self.assertEqual(2, len(self.probe.results))
+        self.assertEqual(3, len(self.probe.results))
 
 
-class ClockTest(TestCase):
+class ClockTest(CPUTestCase):
 
     def setUp(self):
         self.probe = Probe()
@@ -66,11 +65,11 @@ class ClockTest(TestCase):
 
         sleep(0.6)
 
-        self.assertEqual([L, H], self.probe.results)
+        self.assertEqual([L, H, L], self.probe.results)
 
         sleep(0.5)
 
-        self.assertEqual([L, H, L], self.probe.results)
+        self.assertEqual([L, H, L, H], self.probe.results)
 
     @pytest.mark.slow
     def test_clock_frequency_can_be_set_on_creation(self):
@@ -79,7 +78,7 @@ class ClockTest(TestCase):
 
         sleep(0.5)
 
-        self.assertEqual([L, H, L], self.probe.results)
+        self.assertEqual([L, H, L, H], self.probe.results)
 
     @pytest.mark.slow
     def test_clock_frequency_can_be_changed(self):
@@ -97,7 +96,7 @@ class ClockTest(TestCase):
         self.assertEqual([L, H, L, H], self.probe.results)
 
 
-class PulseTest(TestCase):
+class PulseTest(CPUTestCase):
 
     def setUp(self):
         self.probe = Probe()

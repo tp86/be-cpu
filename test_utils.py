@@ -1,3 +1,7 @@
+from unittest import TestCase
+from physical.elements import Pin
+
+
 class Probe:
     def __init__(self):
         self.results = []
@@ -11,3 +15,9 @@ class Probe:
 
     def on_completed(self):
         pass
+
+
+class CPUTestCase(TestCase):
+
+    def tearDown(self) -> None:
+        Pin.disconnect_all()
